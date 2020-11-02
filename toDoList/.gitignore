@@ -29,3 +29,6 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+/resources
+*.spec.ts
+config.xml
