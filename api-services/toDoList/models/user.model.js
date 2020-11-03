@@ -2,15 +2,10 @@ const mongoose = require('mongoose')
 
 var uniqueValidator = require('mongoose-unique-validator')
 
-let rolesValidos = {
-    values: ["PORTAL", "APP"],
-    message: '{VALUE} no es un role válido'
-}
-
 let Schema = mongoose.Schema
 
 let userSchema = new Schema({
-    name: {
+    username: {
         type: "String",
         unique: true,
         required: [true, 'El usuario es necesario'] 
@@ -20,12 +15,8 @@ let userSchema = new Schema({
         unique: true,
         required: [true, 'La contraseña es obligatoria'] 
     },
-    role: {
-        type: String,
-        default: 'APP',
-        required: [true],
-        enum: rolesValidos
-    }
+    token: "String",
+    tokenExpiration: Date  
 })
 
 userSchema.methods.toJSON = function() {

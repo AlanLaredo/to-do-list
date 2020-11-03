@@ -3,10 +3,14 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const routes = require('./routes')
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+dotenv.config()
+process.env.EXPIRATION_TOKEN = '10h';//hours
+process.env.SEED_AUTENTICACION = 'to-do-list-development-seed';
+
+const routes = require('./routes')
 
 var app = express();
 
@@ -20,13 +24,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-dotenv.config()
+
 
 app.use('/', routes);
-
-//application 
-process.env.EXPIRATION_TOKEN = '48h';
-process.env.SEED_AUTENTICACION = process.env.SEED_AUTENTICACION ||  'to-do-list-development-seed';
 
 //Conexión a mongoDb test
 if(process.env.URLDB) {

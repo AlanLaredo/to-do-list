@@ -1,10 +1,11 @@
 var express = require('express');
-const app = express()
-
-var authentication = require('./authentication')
+var authentication = require('./auth')
 var tasks = require('./tasks')
 
-app.use('/authentication', authentication)
+const app = express()
+
+app.use('/auth', authentication)
 app.use('/tasks', tasks)
+
 
 module.exports = app;
