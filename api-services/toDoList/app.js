@@ -3,9 +3,10 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const routes = require('./routes')
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 var app = express();
 
@@ -19,8 +20,29 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+dotenv.config()
+
+app.use('/', routes);
+
+//application 
+process.env.EXPIRATION_TOKEN = '48h';
+process.env.SEED_AUTENTICACION = process.env.SEED_AUTENTICACION ||  'to-do-list-development-seed';
+
+//Conexión a mongoDb test
+if(process.env.URLDB) {
+    mongoose.connect(process.env.URLDB, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true
+    }, (err) => {
+        if (err) throw err;
+            
+        console.log("Base de datos online: " + process.env.URLDB);
+    });
+} else {
+    console.log("No se encontró la variable de entorno")
+}
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
