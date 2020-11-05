@@ -20,13 +20,13 @@ router.post('/login', (req, res) => {
         console.log(user)
         if (erro) {
             return res.status(500).json({
-                result: false, 
+                success: false, 
                 err: erro
             })
         }
         if (!user) {
             return res.status(400).json({
-                result: false,
+                success: false,
                     err: {
                         message: "Usuario o contraseña incorrectos"
                     }
@@ -34,7 +34,7 @@ router.post('/login', (req, res) => {
         }
         if (!bcrypt.compareSync(password, user.password)) {
             return res.status(400).json({ 
-                result: false, 
+                success: false, 
                 err: { message: "Usuario o contraseña incorrectos" } 
             });
         }
@@ -45,7 +45,7 @@ router.post('/login', (req, res) => {
                 expiresIn: process.env.EXPIRATION_TOKEN,
             })
             
-        res.json({ result: true, user, token })
+        res.json({ success: true, user, token })
     }
 
 })
@@ -62,18 +62,15 @@ router.post('/register', function (req, res) {
     user.save((err, user) => {
         if (err) {
             return res.status(400).json({
-                result: false,
+                success: false,
                 err,
             });
         }
         res.json({
-            result: true
-            
+            success: true
         });
     })
 });
-  
-
 
 router.post('/decode', async (req, res) => {
     let token = req.headers['authorization']
@@ -93,6 +90,5 @@ router.post('/decode', async (req, res) => {
         }
     })
 })
-
 
 module.exports = router;

@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+var cors = require('cors')
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -13,6 +14,19 @@ process.env.SEED_AUTENTICACION = 'to-do-list-development-seed';
 const routes = require('./routes')
 
 var app = express();
+/*
+var whitelist = ['http://127.0.0.1:8100']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}*/
+// app.use(cors({origin:'http://127.0.0.1:8100'}))
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

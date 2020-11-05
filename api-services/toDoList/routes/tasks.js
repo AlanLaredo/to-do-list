@@ -40,12 +40,12 @@ router.put('/', function (req, res, next) {
     task.save((err, task) => {
         if (err) {
             return res.status(400).json({
-                result: false,
+                success: false,
                 err,
             });
         }
         res.json({
-            result: true,
+            success: true,
             task
         });
     })
@@ -73,7 +73,7 @@ router.get('/pending', function(req, res, next) {
     if(!rv_token.success) 
         return res.json(rv_token)/* end validation */ 
     
-    Task.find({ userId: userId, finished: false, deleted_date: undefined }).exec((err, results)=> {
+    Task.find({ userId: userId, finished_date: undefined, deleted_date: undefined }).exec((err, results)=> {
         if(!err) {
             res.json({"success": true, "tasks":results})
         } else if(rv_token.success) {
@@ -104,7 +104,7 @@ router.get('/completed', function(req, res, next) {
     if(!rv_token.success) 
         return res.json(rv_token)/* end validation */ 
 
-    Task.find({ userId: userId, finished: true, deleted_date: undefined }).exec((err, results)=> {
+    Task.find({ userId: userId, finished_date:  { $ne: null }, deleted_date: undefined }).exec((err, results)=> {
         if(!err) {
             res.json({"success": true, "tasks":results})
         } else {
@@ -113,8 +113,49 @@ router.get('/completed', function(req, res, next) {
     });
 });
 
+
 /* Remove a task */
-router.delete('/', async function (req, res, next) {
+router.post('/task/:taskId', async function (req, res, next) {
+    let token = req.headers['authorization']
+    let rv_token = {}
+    if (!token) {
+        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
+    }
+    token = token.replace('Bearer ', '')
+    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
+        if (err)
+            rv_token = {status: 400,success: false,error: "Token inválido"}
+        else {
+            rv_token = {
+                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
+            }
+        }
+    })
+
+    if(!rv_token.success) 
+        return res.json(rv_token)/* end validation */ 
+
+    let {taskId} = req.params;
+    let body = req.body;
+    let { name } = body;
+
+
+    let task = await Task.findOne({ _id: taskId })
+    if(task) {
+        task.name = name
+        task.save((err)=> {
+            if(!err)
+                res.json({ "success": true, "message": "Se ha editar la tarea" })
+            else
+                res.json({ "success": false, "message": "error al intentar editar" })
+        })
+    } else {
+        res.json({ "success": false, "message": "No se encontró la tarea" })
+    }
+})
+
+/* Remove a task */
+router.delete('/:taskId', async function (req, res, next) {
     let token = req.headers['authorization']
     let rv_token = {}
     if (!token) {
@@ -133,20 +174,19 @@ router.delete('/', async function (req, res, next) {
     if(!rv_token.success) 
         return res.json(rv_token)/* end validation */ 
 
-    let body = req.body;
-    let { taskId } = body;
+    let {taskId} = req.params;
 
     let task = await Task.findOne({ _id: taskId })
     if(task) {
         task.deleted_date = Date.now()
         task.save((err)=> {
             if(!err)
-                res.json({ result: true, message: "Se ha eliminado la tarea" })
+                res.json({ "success": true, "message": "Se ha eliminado la tarea" })
             else
-                res.json({ result: false, message: "error al intentar eliminar" })
+                res.json({ "success": false, "message": "error al intentar eliminar" })
         })
     } else {
-        res.json({ result: false, message: "No se encontró la tarea" })
+        res.json({ "success": false, "message": "No se encontró la tarea" })
     }
 })
 
@@ -178,17 +218,61 @@ router.post('/edit', async function (req, res, next) {
         task.name = name
         task.save((err)=> {
             if(!err)
-                res.json({result: true, message: "Se ha actualizado una tarea"})
+                res.json({success: true, message: "Se ha actualizado una tarea"})
             else
-                res.json({result: false, message: "Error al intentar actualizar una tarea"})
+                res.json({success: false, message: "Error al intentar actualizar una tarea"})
         })
     } else {
-        res.json({result: false, message: "No se encontró la tarea"})
+        res.json({success: false, message: "No se encontró la tarea"})
     }
+})
+
+/* Reorder a task */
+router.post('/order', async function (req, res, next) {
+    /* validation */
+    let token = req.headers['authorization']
+    let rv_token = {}
+    if (!token) {
+        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
+    }
+    token = token.replace('Bearer ', '')
+    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
+        if (err) {
+            return res.status(400).json({success: false, status: 401, error: "Token inválido"}); 
+        } else {
+            rv_token = {
+                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
+            }
+        }
+    })
+    /* end  validation */
+
+    let body = req.body;
+    let { tasks } = body;
+    let result = {success:true, tasks:[]}
+    tasks.forEach(async i_task => {
+        let task = await Task.findOne({ _id: i_task._id})
+        if(task) {
+            task.order = i_task.order
+            task.save((err)=> {
+                if(!err)
+                    result.tasks.push({updated: true, task})
+                else {
+                    result.tasks.push({updated: false, task, error: err})
+                    result.success = false
+                }
+            })
+        } else {
+            result.tasks.push({updated: false, task:i_task, error: 'No se encontró la tarea'})
+        }
+    })
+
+    res.json(result)
 })
 
 /* Update a task */
 router.post('/complete', async function (req, res, next) {
+
     let token = req.headers['authorization']
     let rv_token = {}
     let userId
@@ -210,19 +294,19 @@ router.post('/complete', async function (req, res, next) {
         return res.json(rv_token)/* end validation */ 
 
     let body = req.body;
-    let { taskId, name } = body;
+    let { taskId } = body;
 
     let task = await Task.findOne({ _id: taskId})
     if(task) {
-        task.finished = true
+        task.finished_date = Date.now()
         task.save((err)=> {
             if(!err)
-                res.json({result: true, message: "Se ha actualizado una tarea"})
+                res.json({success: true, message: "Se ha actualizado una tarea"})
             else
-                res.json({result: false, message: "Error al intentar actualizar una tarea"})
+                res.json({success: false, message: "Error al intentar actualizar una tarea"})
         })
     } else {
-        res.json({result: false, message: "No se encontró la tarea"})
+        res.json({success: false, message: "No se encontró la tarea"})
     }
 })
 module.exports = router;

@@ -8,9 +8,8 @@ let taskSchema = new Schema({
         type: String,
         required: [true, 'El nombre de tarea es necesario'] 
     },
-    finished: {
-        type: Boolean,
-        default: 0
+    finished_date: {
+        type: Date
     },
     order: {
         type: Number
