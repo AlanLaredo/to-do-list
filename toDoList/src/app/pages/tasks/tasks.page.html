@@ -1,0 +1,61 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Tareas</ion-title>
+        <ion-buttons slot="end">
+            <ion-buttons slot="primary">
+                <ion-button (click)="toggleOrder=!toggleOrder">
+                    Ordernar
+                </ion-button>
+                <ion-button (click)="logout()">
+                    <ion-icon name="log-out-outline"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content   [scrollEvents]="true">
+    <ion-toolbar>
+        <ion-segment [(ngModel)]="segment" value="pendings" (ionChange)="segmentChanged($event)">
+            <ion-segment-button value="pendings">Pendientes ({{pendingTasks.length}})</ion-segment-button>
+            <ion-segment-button value="completed">Completadas ({{completedTasks.length}})</ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+
+    <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false" [hidden]="segment!='pendings'">
+        <!-- Default reorder icon, end aligned items -->
+        <ion-item *ngFor="let task of pendingTasks">
+            <ion-label>
+                {{task.order}} - {{task.name}} 
+            </ion-label>
+            <ion-button color="light" *ngIf="!toggleOrder" (click)="completeTask(task)">
+                <ion-icon name="checkmark-outline" color="success" ></ion-icon>
+            </ion-button>
+            <ion-button color="light" *ngIf="!toggleOrder" (click)="editTask(task)">
+                <ion-icon name="create-outline" color="primary"></ion-icon>
+            </ion-button>
+            <ion-button color="light" *ngIf="!toggleOrder" (click)="removeTask(task)">
+                <ion-icon name="trash-outline" color="danger"></ion-icon>
+            </ion-button>
+            <ion-reorder slot="end" *ngIf="toggleOrder"></ion-reorder>
+        </ion-item>
+    </ion-reorder-group>
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!toggleOrder" [hidden]="segment!='pendings'">
+        <ion-fab-button (click)="create()">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <ion-list [hidden]="segment!='completed'">
+        <ion-item *ngFor="let task of completedTasks">
+            <ion-label> 
+                {{task.name}}
+                <p>
+                    {{task.finished_date | date:'medium'}} 
+                </p>
+            </ion-label>
+            <ion-button color="light" *ngIf="!toggleOrder" slot="end" (click)="removeTask(task)">
+                <ion-icon name="trash-outline" color="danger"></ion-icon>
+            </ion-button>
+        </ion-item>
+    </ion-list>
+</ion-content>
