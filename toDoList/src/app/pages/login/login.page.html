@@ -8,19 +8,19 @@
     <ion-grid>
         <ion-row>
             <ion-col align-self-center="align-self-center">
-                    <ion-item lines="full">
-                        <ion-label position="floating">Usuario</ion-label>
-                        <ion-input type="text" [(ngModel)]="user" required="required"></ion-input>
-                    </ion-item>
-                    <ion-item lines="full">
-                        <ion-label position="floating">Contraseña</ion-label>
-                        <ion-input type="password" [(ngModel)]="password" required="required"></ion-input>
-                    </ion-item>
-                    <ion-row>
-                        <ion-col>
-                            <ion-button type="submit" color="primary" (click)="login()" expand="block">Iniciar</ion-button>
-                        </ion-col>
-                    </ion-row>
+                <ion-item lines="full">
+                    <ion-label position="floating">Usuario</ion-label>
+                    <ion-input type="text" [(ngModel)]="username" required="required"></ion-input>
+                </ion-item>
+                <ion-item lines="full">
+                    <ion-label position="floating">Contraseña</ion-label>
+                    <ion-input type="password" [(ngModel)]="password" required="required"></ion-input>
+                </ion-item>
+                <ion-row>
+                    <ion-col>
+                        <ion-button type="submit" color="primary" (click)="login()" expand="block">Iniciar</ion-button>
+                    </ion-col>
+                </ion-row>
             </ion-col>
         </ion-row>
     </ion-grid>
