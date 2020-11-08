@@ -58,7 +58,8 @@ export class TasksPage implements OnInit {
         this.tasksService.getCompleted()
         .then((cb)=>{
             if(cb.success) {
-                this.completedTasks = cb.tasks
+                let tasks = cb.tasks
+                this.completedTasks = tasks.reverse()
             }
         }).catch(async (cb)=> {
             const alert = await this.alertController.create({
@@ -80,8 +81,8 @@ export class TasksPage implements OnInit {
                     placeholder: 'Nueva tarea',
             },],
             buttons: [{
-                text: 'Cancel',
-                role: 'cancel',
+                text: 'Cancelar',
+                role: 'cancelar',
                 cssClass: 'secondary',
                 handler: () => { }
             }, {
@@ -148,7 +149,6 @@ export class TasksPage implements OnInit {
     }
     
     async completeTask(task) {
-
         const alert = await this.alertController.create({
             header: "To do list",
             subHeader: 'Completar tarea',
@@ -162,11 +162,9 @@ export class TasksPage implements OnInit {
                     }]
           });
           alert.present()
-
-        
     }
 
-    async complete(task) {
+    async complete(task: any) {
         this.tasksService.complete(task._id)
         .then((cb)=>{
             this.toast('Se ha completado una tarea', 2)
@@ -183,7 +181,7 @@ export class TasksPage implements OnInit {
         })    
     }
     
-    async removeTask(task) {
+    async removeTask(task: any) {
         const alert = await this.alertController.create({
             header: "To do list",
             subHeader: 'Eliminar tarea',
@@ -199,7 +197,7 @@ export class TasksPage implements OnInit {
         alert.present()       
     }
 
-    async remove(task) {
+    async remove(task: any) {
         this.tasksService.remove(task._id)  
         .then((cb)=>{
             this.toast('Se ha eliminado una tarea', 1)
@@ -216,7 +214,7 @@ export class TasksPage implements OnInit {
         }) 
     }
 
-    async editTask(task) {
+    async editTask(task: any) {
         const alert = await this.alertController.create({
             header: 'Editar Tarea',
             inputs: [{
@@ -226,8 +224,8 @@ export class TasksPage implements OnInit {
                     placeholder: 'Nueva tarea',
                 },
             ], buttons: [{
-                text: 'Cancel',
-                role: 'cancel',
+                text: 'Cancelar',
+                role: 'cancelar',
                 cssClass: 'secondary',
                 handler: () => { }
             }, {
@@ -245,7 +243,7 @@ export class TasksPage implements OnInit {
         await alert.present();
     }
 
-    updateNameTask(taskId, name) {
+    updateNameTask(taskId: string, name: string) {
         this.tasksService.updateName(taskId, name)
         .then((cb)=>{
             this.toast('Lista actualizada', 1)

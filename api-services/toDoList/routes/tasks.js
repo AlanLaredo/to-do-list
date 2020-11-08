@@ -104,7 +104,7 @@ router.get('/completed', function(req, res, next) {
     if(!rv_token.success) 
         return res.json(rv_token)/* end validation */ 
 
-    Task.find({ userId: userId, finished_date:  { $ne: null }, deleted_date: undefined }).exec((err, results)=> {
+    Task.find({ userId: userId, finished_date:  { $ne: null }, deleted_date: undefined }).sort([['date']]).exec((err, results)=> {
         if(!err) {
             res.json({"success": true, "tasks":results})
         } else {
