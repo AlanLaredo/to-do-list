@@ -3,36 +3,26 @@ import {environment} from 'src/environments/environment';
 import {HttpClient} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
-export class AuthService {
+export class UsersService {
 
     constructor(private http : HttpClient) {}
 
-    login(username : String, password : String): Promise<any> {
+    create(username: string, password: string) {
         return new Promise((resolve, reject) => {
-            let options = {}
-            let data = {
-                username,
-                password
-            }
-            let url = environment.apiUrl + '/auth/login'
-
+            let data = {username, password}
+            let url = environment.apiUrl + '/users'
             this
                 .http
-                .post<any>(url, data, options)
+                .put<any>(url, data)
                 .subscribe((cb) => {
-                    //desactivar loading
-                    if (cb.success) {
-                        // mensaje de bienvenida generación de sesión cb.token redirección a ventanada
-                        // de tareas
-                        resolve(cb)
-                    }
+                    resolve(cb)
                 }, (err) => reject(err))
         })
     }
 
     checkUsername(username: string) {
         return new Promise((resolve, reject) => {
-            let url = environment.apiUrl + '/auth/checkusername/' + username
+            let url = environment.apiUrl + '/users/checkusername/' + username
             this
                 .http
                 .get<any>(url)

@@ -12,7 +12,11 @@ const routes: Routes = [
   {
     path: 'tasks',
     loadChildren: () => import('./pages/tasks/tasks.module').then( m => m.TasksPageModule)
+  },  {
+    path: 'registry',
+    loadChildren: () => import('./pages/registry/registry.module').then( m => m.RegistryPageModule)
   }
+
 
 ];
 @NgModule({

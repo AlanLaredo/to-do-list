@@ -21,15 +21,12 @@ export class LoginPage implements OnInit {
         public toastController: ToastController,
         private router: Router) { }
     
-    ngOnInit() {
-    }
+    ngOnInit() { }
     
     login(): void {
-
         //activar loading
         let username = this.username
         let password = this.password
-        let toggleOrder : boolean = false
         this.authService.login(username, password)
         .then((cb)=>{
             this.router.navigate(['/tasks']);
@@ -42,5 +39,9 @@ export class LoginPage implements OnInit {
             });
             await toast.present() 
         })        
+    }
+
+    resgistry() {
+        this.router.navigate(['/registry']);
     }
 }

@@ -1,0 +1,63 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Registro</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list lines="full" class="ion-no-margin">
+        <ion-item>
+            <ion-label position="stacked">Usuario<ion-text color="danger">*</ion-text>
+                <ion-text *ngIf="username && checked" color="{{availableUsername?'success':'danger'}}">{{availableUsername?'Disponible':'No disponible'}}</ion-text>
+            </ion-label>
+            <ion-input required type="text" (change)="existsUser()" (keyup)="checked=false" [(ngModel)]="username"></ion-input>
+        </ion-item>      
+        <ion-item>
+            <ion-label position="stacked">Contraseña<ion-text color="danger">*</ion-text></ion-label>
+            <ion-input required type="password" (keyup)="passwordEvaluation()" [(ngModel)]="password"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Contraseña<ion-text color="danger">*</ion-text></ion-label>
+            <ion-input required type="password" [(ngModel)]="passwordConfirmation"></ion-input>
+        </ion-item>
+        <ion-list>
+            <ion-list-header>
+                <ion-label>Seguridad de contraseña</ion-label>
+            </ion-list-header>
+            <ion-list-header>
+                <ion-label>
+                    <ion-icon name="checkmark-outline" *ngIf="hasLetters()" color="success"></ion-icon>
+                    Usar letras
+                </ion-label>
+            </ion-list-header>
+            <ion-list-header>
+                <ion-label>
+                    <ion-icon name="checkmark-outline"  *ngIf="hasNumbers()" color="success"></ion-icon>
+                    Usar números
+                </ion-label>
+            </ion-list-header>
+            <ion-list-header>
+                <ion-label>
+                    <ion-icon
+                        name="checkmark-outline"
+                        *ngIf="hasMoreThanEitght()"
+                        color="success"></ion-icon>
+                    Usar mas de 8 caracteres
+                </ion-label>
+            </ion-list-header>
+            <ion-list-header>
+                <ion-label>
+                    <ion-icon name="checkmark-outline" *ngIf="hasSymbols()" color="success"></ion-icon>
+                    Usar símbolos
+                </ion-label>
+            </ion-list-header>
+            <ion-progress-bar
+                color="{{getEvaluationColor()}}"
+                value="{{securityEvaluation}}"></ion-progress-bar>
+        </ion-list>
+    </ion-list>
+    <ion-row>
+        <ion-col>
+            <ion-button type="submit" color="primary" (click)="guardar()" expand="block" >Registrarse</ion-button>
+        </ion-col>
+    </ion-row>
+</ion-content>
