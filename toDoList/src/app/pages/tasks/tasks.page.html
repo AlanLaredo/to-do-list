@@ -3,8 +3,8 @@
         <ion-title>Tareas</ion-title>
         <ion-buttons slot="end">
             <ion-buttons slot="primary">
-                <ion-button (click)="toggleOrder=!toggleOrder">
-                    Ordernar
+                <ion-button (click)="toggleOrder=!toggleOrder" *ngIf="pendingTasks.length>1" color="{{toggleOrder?'primary':'default'}}">
+                    {{toggleOrder?'Ordernando':'Ordenar'}}
                 </ion-button>
                 <ion-button (click)="logout()">
                     <ion-icon name="log-out-outline"></ion-icon>
@@ -22,7 +22,6 @@
     </ion-toolbar>
 
     <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false" [hidden]="segment!='pendings'">
-        <!-- Default reorder icon, end aligned items -->
         <ion-item *ngFor="let task of pendingTasks">
             <ion-label>
                 {{task.order}} - {{task.name}} 
@@ -37,6 +36,12 @@
                 <ion-icon name="trash-outline" color="danger"></ion-icon>
             </ion-button>
             <ion-reorder slot="end" *ngIf="toggleOrder"></ion-reorder>
+        </ion-item>
+        <ion-item *ngIf="pendingTasks.length==0">
+            <ion-label>
+               No hay tareas pendientes 
+               <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-label>
         </ion-item>
     </ion-reorder-group>
     <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!toggleOrder" [hidden]="segment!='pendings'">
@@ -56,6 +61,12 @@
             <ion-button color="light" *ngIf="!toggleOrder" slot="end" (click)="removeTask(task)">
                 <ion-icon name="trash-outline" color="danger"></ion-icon>
             </ion-button>
+        </ion-item>
+        <ion-item *ngIf="completedTasks.length==0">
+            <ion-label>
+               No hay tareas completadas 
+               <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-label>
         </ion-item>
     </ion-list>
 </ion-content>
