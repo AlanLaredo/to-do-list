@@ -1,5 +1,8 @@
 <ion-header>
     <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
         <ion-title>Registro</ion-title>
     </ion-toolbar>
 </ion-header>
@@ -9,7 +12,7 @@
             <ion-label position="stacked">Usuario<ion-text color="danger">*</ion-text>
                 <ion-text *ngIf="username && checked" color="{{availableUsername?'success':'danger'}}">{{availableUsername?'Disponible':'No disponible'}}</ion-text>
             </ion-label>
-            <ion-input required type="text" (change)="existsUser()" (keyup)="checked=false" [(ngModel)]="username"></ion-input>
+            <ion-input required type="text" (change)="existsUser()" (keyup)="checked=false; clearSpaces();" [(ngModel)]="username"></ion-input>
         </ion-item>      
         <ion-item>
             <ion-label position="stacked">Contraseña<ion-text color="danger">*</ion-text></ion-label>

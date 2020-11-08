@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
 router.put('/', function (req, res) {
     let body = req.body;
     let { username, password } = body;
-    username = username.toLowerCase()
+    username = username.trim().toLowerCase()
     let user = new User({
         username,
         password: bcrypt.hashSync(password, 10)

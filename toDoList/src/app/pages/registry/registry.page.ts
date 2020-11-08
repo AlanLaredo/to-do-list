@@ -46,6 +46,10 @@ export class RegistryPage implements OnInit {
         })
     }
 
+    clearSpaces() {
+        this.username = this.username.replace(/\s/g, "");
+    }
+
     registryIsValid() {
         if(!this.availableUsername || !this.username) {
             this.toast('El nombre de usuario no es valido')
