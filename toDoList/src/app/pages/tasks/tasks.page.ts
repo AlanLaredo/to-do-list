@@ -147,7 +147,26 @@ export class TasksPage implements OnInit {
         })
     }
     
-    completeTask(task) {
+    async completeTask(task) {
+
+        const alert = await this.alertController.create({
+            header: "To do list",
+            subHeader: 'Completar tarea',
+            message: "¿Está seguro de completar esta tarea?",
+            buttons: ['Cancelar', {
+                        text: 'Completar',
+                        role: 'completar',
+                        handler: () => {
+                            this.complete(task)    
+                        }
+                    }]
+          });
+          alert.present()
+
+        
+    }
+
+    async complete(task) {
         this.tasksService.complete(task._id)
         .then((cb)=>{
             this.toast('Se ha completado una tarea', 2)
@@ -159,12 +178,28 @@ export class TasksPage implements OnInit {
                 subHeader: 'Error al completar la tarea',
                 message: cb.error.err.message,
                 buttons: ['OK']
-              });
-              alert.present()
+             });
+            alert.present()
         })    
     }
     
-    removeTask(task) {
+    async removeTask(task) {
+        const alert = await this.alertController.create({
+            header: "To do list",
+            subHeader: 'Eliminar tarea',
+            message: "¿Está seguro de eliminar esta tarea?",
+            buttons: ['Cancelar', {
+                        text: 'Eliminar',
+                        role: 'eliminar',
+                        handler: () => { 
+                            this.remove(task)
+                        }
+                    }]
+        });
+        alert.present()       
+    }
+
+    async remove(task) {
         this.tasksService.remove(task._id)  
         .then((cb)=>{
             this.toast('Se ha eliminado una tarea', 1)
@@ -176,8 +211,8 @@ export class TasksPage implements OnInit {
                 subHeader: 'Error al eliminar la tarea',
                 message: cb.error.err.message,
                 buttons: ['OK']
-              });
-              alert.present()
+            });
+            alert.present()
         }) 
     }
 
@@ -189,8 +224,8 @@ export class TasksPage implements OnInit {
                     type: 'text',
                     value: task.name,
                     placeholder: 'Nueva tarea',
-            },],
-            buttons: [{
+                },
+            ], buttons: [{
                 text: 'Cancel',
                 role: 'cancel',
                 cssClass: 'secondary',
@@ -227,9 +262,20 @@ export class TasksPage implements OnInit {
         })
     }
 
-    logout() {
-        this.tokenStorageService.signOut()
-        this.router.navigate(['/login']);
+    async logout() {
+        const alert = await this.alertController.create({
+            header: "To do list",
+            subHeader: 'Cerrar sesión',
+            message: "¿Está seguro de cerrar sesión?",
+            buttons: ['Cancelar', {
+                        text: 'Cerrar',
+                        role: 'cerrar',
+                        handler: () => {
+                            this.tokenStorageService.signOut()
+                            this.router.navigate(['/login']);                       }
+                    }]
+          });
+          alert.present()
     }
     
     segmentChanged(ev: any) {
