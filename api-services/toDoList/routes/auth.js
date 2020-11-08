@@ -16,8 +16,7 @@ router.post('/login', (req, res) => {
 
     User.findOne({ username: username }, loginCallback)
 
-    function  loginCallback(erro, user) {
-        console.log(user)
+    function loginCallback(erro, user) {
         if (erro) {
             return res.status(500).json({
                 success: false, 
@@ -49,29 +48,7 @@ router.post('/login', (req, res) => {
     }
 
 })
-
-router.post('/register', function (req, res) {
-    let body = req.body;
-    let { username, password } = body;
-
-    let user = new User({
-        username,
-        password: bcrypt.hashSync(password, 10)
-    });
-
-    user.save((err, user) => {
-        if (err) {
-            return res.status(400).json({
-                success: false,
-                err,
-            });
-        }
-        res.json({
-            success: true
-        });
-    })
-});
-
+/*
 router.post('/decode', async (req, res) => {
     let token = req.headers['authorization']
     if (!token) {
@@ -89,6 +66,6 @@ router.post('/decode', async (req, res) => {
             }
         }
     })
-})
+})*/
 
 module.exports = router;
