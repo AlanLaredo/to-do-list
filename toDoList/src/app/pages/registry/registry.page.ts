@@ -55,6 +55,10 @@ export class RegistryPage implements OnInit {
             this.toast('Las contraseñas no coinciden')
             return false
         }
+        if(!this.password) {
+            this.toast('La contraseña no es válida')
+            return false
+        }
         return true
     }
     

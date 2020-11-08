@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
 router.put('/', function (req, res) {
     let body = req.body;
     let { username, password } = body;
-
+    username = username.toLowerCase()
     let user = new User({
         username,
         password: bcrypt.hashSync(password, 10)
@@ -34,8 +34,8 @@ router.put('/', function (req, res) {
 
 router.get('/checkusername/:username', function(req, res, next) {
     let {username} = req.params;
-
-    User.findOne({ username: username }, cbExistsUser)
+    
+    User.findOne({ username: username.toLowerCase() }, cbExistsUser)
 
     function cbExistsUser(erro, user) {
         if (erro) {
