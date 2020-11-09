@@ -321,16 +321,22 @@ export class TasksPage implements OnInit {
             buttons: ['Cancelar', {
                         text: 'Cerrar',
                         role: 'cerrar',
-                        handler: () => {
+                        handler: async () => {
+                            const loading = await this.loadingController.create({
+                                cssClass: 'my-custom-class',
+                                message: 'Cerrando sesión...',
+                            });
+                            await loading.present();
                             this.authService.logOut()
                             .then()
                             .finally(()=> {
                                 this.router.navigate(['/login'])
                                 this.tokenStorageService.signOut()
+                                loading.dismiss()
                             })
                         }
                     }]
-          });
+          })
           alert.present()
     }
     
