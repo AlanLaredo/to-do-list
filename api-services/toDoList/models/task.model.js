@@ -15,12 +15,16 @@ let taskSchema = new Schema({
     finished_date: {
         type: Date
     },
-    order: {
-        type: Number
-    },
     deleted_date: {
         type: Date
     },
+    modification_date: {
+        type: Date
+    },
+    order: {
+        type: Number
+    },
+
     userId: { 
         type: String
     }

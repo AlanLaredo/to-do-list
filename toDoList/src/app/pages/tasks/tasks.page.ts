@@ -99,7 +99,6 @@ export class TasksPage implements OnInit {
                 handler: (rs) => {
                     if(rs.Nombre && rs.Nombre.trim()!="") {
                         let existsTaks = this.pendingTasks.find(pendingTask => pendingTask.name == rs.Nombre)
-                        console.log(existsTaks)
                         if(existsTaks) {
                             this.confirm("Ya hay una tarea con ese nombre", "Crear")
                             .then((rsConfirm)=> {
@@ -270,7 +269,14 @@ export class TasksPage implements OnInit {
                 text: 'Editar',
                 handler: (rs) => {
                     if(rs.Nombre && rs.Nombre.trim()!="") {
-                        this.updateNameTask(task._id,rs.Nombre)
+                        let existsTaks = this.pendingTasks.find(pendingTask => pendingTask.name == rs.Nombre)
+                        if(existsTaks) {
+                            this.confirm("Ya hay una tarea con ese nombre", "Editar")
+                            .then((rsConfirm)=> {
+                                if(rsConfirm) this.updateNameTask(task._id,rs.Nombre)
+                            })
+                        } else 
+                            this.updateNameTask(task._id,rs.Nombre)
                     } else {
                         this.toast('Introduzca un nombre.')
                         return false
