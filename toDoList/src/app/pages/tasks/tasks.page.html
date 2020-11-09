@@ -19,6 +19,7 @@
             <ion-segment-button value="pendings">Pendientes ({{pendingTasks.length}})</ion-segment-button>
             <ion-segment-button value="completed">Completadas ({{completedTasks.length}})</ion-segment-button>
         </ion-segment>
+        <ion-progress-bar *ngIf="loadingCompletedBar || loadingPendingBar" type="indeterminate"></ion-progress-bar>
     </ion-toolbar>
 
     <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false" [hidden]="segment!='pendings'">

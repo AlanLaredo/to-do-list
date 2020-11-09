@@ -14,6 +14,8 @@ export class TasksPage implements OnInit {
     pendingTasks = []
     completedTasks = []
     segment: String = 'pendings'
+    loadingPendingBar: boolean = false
+    loadingCompletedBar: boolean = false
 
     constructor(private router: Router,         
         private tasksService: TasksService,
@@ -32,6 +34,7 @@ export class TasksPage implements OnInit {
     }
 
     loadPendingTasks(recalculateOrder: boolean = false) {
+        this.loadingPendingBar = true
         this.tasksService.getPending()
         .then((cb)=>{
             if(cb.success) {
@@ -52,10 +55,13 @@ export class TasksPage implements OnInit {
                 buttons: ['OK']
               });
               alert.present()
+        }).finally(()=> {
+            this.loadingPendingBar = false
         })
     }
 
     loadCompletedTasks() {
+        this.loadingCompletedBar = true
         this.tasksService.getCompleted()
         .then((cb)=>{
             if(cb.success) {
@@ -70,6 +76,8 @@ export class TasksPage implements OnInit {
                 buttons: ['OK']
               });
               alert.present()
+        }).finally(()=> {
+            this.loadingCompletedBar = false
         })
     }
 
