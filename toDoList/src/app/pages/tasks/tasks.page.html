@@ -6,7 +6,7 @@
                 <ion-button (click)="toggleOrder=!toggleOrder" *ngIf="pendingTasks.length>1" color="{{toggleOrder?'primary':'default'}}">
                     {{toggleOrder?'Ordernando':'Ordenar'}}
                 </ion-button>
-                <ion-button (click)="logout()">
+                <ion-button (click)="logOut()">
                     <ion-icon name="log-out-outline"></ion-icon>
                 </ion-button>
               </ion-buttons>

@@ -19,18 +19,32 @@ export class AuthService {
             this
                 .http
                 .post<any>(url, data, options)
-                .subscribe((cb) => {
-                    //desactivar loading
+                .subscribe(cb => {
                     if (cb.success) {
-                        // mensaje de bienvenida generación de sesión cb.token redirección a ventanada
-                        // de tareas
                         resolve(cb)
                     }
-                }, (err) => reject(err))
+                }, err => reject(err))
         })
     }
 
-    checkUsername(username: string) {
+    logOut(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let options = {}
+            let data = {}
+            let url = environment.apiUrl + '/auth/logout'
+
+            this
+                .http
+                .post<any>(url, data, options)
+                .subscribe(cb => {
+                    resolve(cb)
+                }, err => {
+                    reject(err)
+                })
+        })
+    }
+
+    checkUsername(username : string) {
         return new Promise((resolve, reject) => {
             let url = environment.apiUrl + '/auth/checkusername/' + username
             this

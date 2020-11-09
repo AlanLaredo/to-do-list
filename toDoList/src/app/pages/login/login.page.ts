@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 export class LoginPage implements OnInit {
 
     username: string = 'alan'
-    password: string = 'laredo'
+    password: string = 'Laredo'
     constructor(private authService: AuthService, 
         private tokenStorageService: TokenStorageService,
         public alertController: AlertController,

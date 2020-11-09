@@ -15,8 +15,9 @@ let userSchema = new Schema({
         unique: true,
         required: [true, 'La contraseña es obligatoria'] 
     },
-    token: "String",
-    tokenExpiration: Date  
+    token:  {
+        type: "String"
+    }
 })
 
 userSchema.methods.toJSON = function() {

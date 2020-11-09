@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { TokenStorageService } from 'src/app/services/auth/token-storage.service';
 import { TasksService } from 'src/app/services/tasks/tasks.service';
 
@@ -22,7 +23,8 @@ export class TasksPage implements OnInit {
         public alertController: AlertController,
         public toastController: ToastController,
         private tokenStorageService: TokenStorageService,
-        private loadingController: LoadingController) { }
+        private loadingController: LoadingController,
+        private authService: AuthService) { }
 
     ngOnInit() {
         this.loadPendingTasks()
@@ -311,7 +313,7 @@ export class TasksPage implements OnInit {
         })
     }
 
-    async logout() {
+    async logOut() {
         const alert = await this.alertController.create({
             header: "To do list",
             subHeader: 'Cerrar sesión',
@@ -320,8 +322,13 @@ export class TasksPage implements OnInit {
                         text: 'Cerrar',
                         role: 'cerrar',
                         handler: () => {
-                            this.tokenStorageService.signOut()
-                            this.router.navigate(['/login']);                       }
+                            this.authService.logOut()
+                            .then()
+                            .finally(()=> {
+                                this.router.navigate(['/login'])
+                                this.tokenStorageService.signOut()
+                            })
+                        }
                     }]
           });
           alert.present()

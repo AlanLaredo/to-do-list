@@ -2,23 +2,26 @@ var express = require('express');
 var jwt = require('jsonwebtoken')
 var router = express.Router();
 const Task = require('../models/task.model');
+const User = require('../models/user.model');
 
 router.get('/', function(req, res, next) {
     res.end('send all tasks')
 });
 
 /* Create new task */
-router.put('/', function (req, res, next) {
+router.put('/', async function (req, res, next) {
     let token = req.headers['authorization']
     let rv_token = {}
     let userId
     if (!token) {
         return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
     }
+    
     token = token.replace('Bearer ', '')
+
     jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
         if (err)
-        rv_token = {status: 400,success: false,error: "Token inválido"}
+            rv_token = {status: 400,success: false,error: "Token no válido"}
         else {
             userId = row.user._id
             rv_token = {
@@ -26,10 +29,25 @@ router.put('/', function (req, res, next) {
             }
         }
     })
-    if(!rv_token.success) 
-        return res.json(rv_token)/* end validation */ 
+    let user = await User.findOne({_id: userId})
 
-    let body = req.body;
+    if(!userId)
+        return res.json({
+            success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
+        })
+
+    if(user.token != token) {
+        rv_token = {
+            success: false,
+            message: "El token no esta registrado",
+            status: 200
+        }
+        return res.json(rv_token)
+    }
+/* end validation */
+
+        user.token != token
+        let body = req.body;
     let { name, order } = body;
     let task = new Task({
         name,
