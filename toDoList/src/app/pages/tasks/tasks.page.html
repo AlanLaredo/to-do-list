@@ -45,7 +45,7 @@
         </ion-item>
     </ion-reorder-group>
     <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!toggleOrder" [hidden]="segment!='pendings'">
-        <ion-fab-button (click)="create()">
+        <ion-fab-button (click)="saveNewTask()">
             <ion-icon name="add"></ion-icon>
         </ion-fab-button>
     </ion-fab>

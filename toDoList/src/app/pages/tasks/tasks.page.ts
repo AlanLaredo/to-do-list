@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TokenStorageService } from 'src/app/services/auth/token-storage.service';
 import { TasksService } from 'src/app/services/tasks/tasks.service';
 
@@ -19,7 +19,8 @@ export class TasksPage implements OnInit {
         private tasksService: TasksService,
         public alertController: AlertController,
         public toastController: ToastController,
-        private tokenStorageService: TokenStorageService) { }
+        private tokenStorageService: TokenStorageService,
+        private loadingController: LoadingController) { }
 
     ngOnInit() {
         this.loadPendingTasks()
@@ -72,7 +73,7 @@ export class TasksPage implements OnInit {
         })
     }
 
-    async create() {
+    async saveNewTask() {
         const alert = await this.alertController.create({
             header: 'Añadir tarea',
             inputs: [{
@@ -89,7 +90,15 @@ export class TasksPage implements OnInit {
                 text: 'Ok',
                 handler: (rs) => {
                     if(rs.Nombre && rs.Nombre.trim()!="") {
-                        this.saveNewTask(rs.Nombre)
+                        let existsTaks = this.pendingTasks.find(pendingTask => pendingTask.name == rs.Nombre)
+                        console.log(existsTaks)
+                        if(existsTaks) {
+                            this.confirm("Ya hay una tarea con ese nombre", "Crear")
+                            .then((rsConfirm)=> {
+                                if(rsConfirm) this.create(rs.Nombre)
+                            })
+                        } else 
+                            this.create(rs.Nombre)
                     } else {
                         this.toast('Introduzca un nombre.')
                         return false
@@ -100,7 +109,12 @@ export class TasksPage implements OnInit {
         await alert.present();
     }
 
-    saveNewTask(name: String) {
+    async create(name: String) {
+        const loading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Creando nueva tarea...'
+        });
+        await loading.present();
         let order = (this.pendingTasks.length + 1)
         this.tasksService.create(name, order)
         .then((cb)=>{
@@ -114,8 +128,10 @@ export class TasksPage implements OnInit {
                 subHeader: 'Ha ocurrido un error al intentar crear la tarea',
                 message: cb.error.err.message,
                 buttons: ['OK']
-              });
-              alert.present()
+            });
+            alert.present()
+        }).finally(()=> {
+            loading.dismiss()
         })
     }
 
@@ -165,6 +181,11 @@ export class TasksPage implements OnInit {
     }
 
     async complete(task: any) {
+        const loading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Completado tarea...',
+        });
+        await loading.present();
         this.tasksService.complete(task._id)
         .then((cb)=>{
             this.toast('Se ha completado una tarea', 2)
@@ -178,7 +199,9 @@ export class TasksPage implements OnInit {
                 buttons: ['OK']
              });
             alert.present()
-        })    
+        }).finally(()=>{
+            loading.dismiss()
+        })
     }
     
     async removeTask(task: any) {
@@ -198,6 +221,11 @@ export class TasksPage implements OnInit {
     }
 
     async remove(task: any) {
+        const loading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Eliminando...',
+        });
+        await loading.present();
         this.tasksService.remove(task._id)  
         .then((cb)=>{
             this.toast('Se ha eliminado una tarea', 1)
@@ -211,7 +239,9 @@ export class TasksPage implements OnInit {
                 buttons: ['OK']
             });
             alert.present()
-        }) 
+        }).finally(()=> {
+            loading.dismiss()
+        })
     }
 
     async editTask(task: any) {
@@ -243,7 +273,12 @@ export class TasksPage implements OnInit {
         await alert.present();
     }
 
-    updateNameTask(taskId: string, name: string) {
+    async updateNameTask(taskId: string, name: string) {
+        const loading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Guardando cambios...',
+        });
+        await loading.present();
         this.tasksService.updateName(taskId, name)
         .then((cb)=>{
             this.toast('Lista actualizada', 1)
@@ -257,6 +292,8 @@ export class TasksPage implements OnInit {
                 buttons: ['OK']
               });
               alert.present()
+        }).finally(() => {
+            loading.dismiss()
         })
     }
 
@@ -286,5 +323,27 @@ export class TasksPage implements OnInit {
             duration: seconds * 1000
         });
         await toast.present() 
+    }
+
+    async confirm(text: string, successBtnText): Promise<Boolean> {
+        return new Promise(async (resolve, reject) => {
+            const alert = await this.alertController.create({
+                header: text,
+                buttons: [{
+                    text: 'Cancelar',
+                    role: 'cancelar',
+                    cssClass: 'secondary',
+                    handler: () => { 
+                        resolve(false)
+                    }
+                }, {
+                    text: successBtnText,
+                    handler: (rs) => {
+                        resolve(true)            
+                    }
+                }]
+            });
+            await alert.present();
+        })
     }
 }

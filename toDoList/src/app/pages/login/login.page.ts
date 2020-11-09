@@ -3,7 +3,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { TokenStorageService } from 'src/app/services/auth/token-storage.service';
 import { TasksService } from 'src/app/services/tasks/tasks.service';
 import { environment } from 'src/environments/environment';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,12 +19,19 @@ export class LoginPage implements OnInit {
         private tokenStorageService: TokenStorageService,
         public alertController: AlertController,
         public toastController: ToastController,
-        private router: Router) { }
+        private router: Router,
+        private loadingController: LoadingController) { }
     
     ngOnInit() { }
     
-    login(): void {
-        //activar loading
+    async login() {
+
+        const loading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Iniciando sesión...',
+        });
+        await loading.present();
+
         let username = this.username
         let password = this.password
         this.authService.login(username, password)
@@ -38,7 +45,9 @@ export class LoginPage implements OnInit {
                 duration: 1000
             });
             await toast.present() 
-        })        
+        }).finally(async ()=>{
+            await loading.dismiss();
+        })
     }
 
     resgistry() {
