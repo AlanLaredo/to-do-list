@@ -1,53 +1,16 @@
 var express = require('express');
-var jwt = require('jsonwebtoken')
-var router = express.Router();
 const Task = require('../models/task.model');
-const User = require('../models/user.model');
 
-router.get('/', function(req, res, next) {
+var router = express.Router();
+
+router.get('/', function(req, res) {
     res.end('send all tasks')
 });
 
 /* Create new task */
-router.put('/', async function (req, res, next) {
-    let token = req.headers['authorization']
-    let rv_token = {}
-    let userId
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    
-    token = token.replace('Bearer ', '')
-
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err)
-            rv_token = {status: 400,success: false,error: "Token no válido"}
-        else {
-            userId = row.user._id
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-    let user = await User.findOne({_id: userId})
-
-    if(!userId)
-        return res.json({
-            success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-        })
-
-    if(user.token != token) {
-        rv_token = {
-            success: false,
-            message: "El token no esta registrado",
-            status: 200
-        }
-        return res.json(rv_token)
-    }
-/* end validation */
-
-        user.token != token
-        let body = req.body;
+router.put('/', async function (req, res) {
+    let body = req.body;
+    let {userId} = req
     let { name, order } = body;
     let task = new Task({
         name,
@@ -70,27 +33,8 @@ router.put('/', async function (req, res, next) {
 })
 
 /* Get pending tasks */
-router.get('/pending', function(req, res, next) {
-    let token = req.headers['authorization']
-    let rv_token = {}
-    let userId
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    token = token.replace('Bearer ', '')
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err)
-        rv_token = {status: 400,success: false,error: "Token inválido"}
-        else {
-            userId = row.user._id
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-    if(!rv_token.success) 
-        return res.json(rv_token)/* end validation */ 
-    
+router.get('/pending', function(req, res) {
+    let {userId} = req
     Task.find({ userId: userId, finished_date: undefined, deleted_date: undefined }).exec((err, results)=> {
         if(!err) {
             res.json({"success": true, "tasks":results})
@@ -101,27 +45,8 @@ router.get('/pending', function(req, res, next) {
 });
 
 /* Get active tasks */
-router.get('/completed', function(req, res, next) {
-    let token = req.headers['authorization']
-    let rv_token = {}
-    let userId
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    token = token.replace('Bearer ', '')
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err)
-        rv_token = {status: 400,success: false,error: "Token inválido"}
-        else {
-            userId = row.user._id
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-    if(!rv_token.success) 
-        return res.json(rv_token)/* end validation */ 
-
+router.get('/completed', function(req, res) {
+    let {userId} = req
     Task.find({ userId: userId, finished_date:  { $ne: null }, deleted_date: undefined }).sort([['date']]).exec((err, results)=> {
         if(!err) {
             res.json({"success": true, "tasks":results})
@@ -131,31 +56,10 @@ router.get('/completed', function(req, res, next) {
     });
 });
 
-router.post('/:taskId', async function (req, res, next) {
-    let token = req.headers['authorization']
-    let rv_token = {}
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    token = token.replace('Bearer ', '')
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err)
-            rv_token = {status: 400,success: false,error: "Token inválido"}
-        else {
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-
-    if(!rv_token.success) 
-        return res.json(rv_token)/* end validation */ 
-
+router.post('/name/:taskId', async function (req, res) {
     let {taskId} = req.params;
     let body = req.body;
     let { name } = body;
-
-
     let task = await Task.findOne({ _id: taskId })
     if(task) {
         task.name = name
@@ -172,27 +76,8 @@ router.post('/:taskId', async function (req, res, next) {
 })
 
 /* Remove a task */
-router.delete('/:taskId', async function (req, res, next) {
-    let token = req.headers['authorization']
-    let rv_token = {}
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    token = token.replace('Bearer ', '')
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err)
-            rv_token = {status: 400,success: false,error: "Token inválido"}
-        else {
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-    if(!rv_token.success) 
-        return res.json(rv_token)/* end validation */ 
-
+router.delete('/:taskId', async function (req, res) {
     let {taskId} = req.params;
-
     let task = await Task.findOne({ _id: taskId })
     if(task) {
         task.deleted_date = Date.now()
@@ -208,25 +93,7 @@ router.delete('/:taskId', async function (req, res, next) {
 })
 
 /* Reorder a task */
-router.post('/order', async function (req, res, next) {
-    /* validation */
-    let token = req.headers['authorization']
-    let rv_token = {}
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    token = token.replace('Bearer ', '')
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err) {
-            return res.status(400).json({success: false, status: 401, error: "Token inválido"}); 
-        } else {
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-    /* end  validation */
-
+router.post('/order', async function (req, res) {
     let body = req.body;
     let { tasks } = body;
     let result = {success:true, tasks:[]}
@@ -246,36 +113,13 @@ router.post('/order', async function (req, res, next) {
             result.tasks.push({updated: false, task:i_task, error: 'No se encontró la tarea'})
         }
     })
-
     res.json(result)
 })
 
 /* Update a task */
-router.post('/complete', async function (req, res, next) {
-
-    let token = req.headers['authorization']
-    let rv_token = {}
-    let userId
-    if (!token) {
-        return res.status(400).json({success: false, status: 401, error: "Es necesario el token de autenticación"}); 
-    }
-    token = token.replace('Bearer ', '')
-    jwt.verify(token, process.env.SEED_AUTENTICACION, function (err, row) {
-        if (err)
-        rv_token = {status: 400,success: false,error: "Token inválido"}
-        else {
-            userId = row.user._id
-            rv_token = {
-                success: true, status:200, message: 'El token es valido' + row.user.username + ' ' + row.user._id + ' ' + process.env.EXPIRATION_TOKEN
-            }
-        }
-    })
-    if(!rv_token.success) 
-        return res.json(rv_token)/* end validation */ 
-
+router.post('/complete', async function (req, res) {
     let body = req.body;
     let { taskId } = body;
-
     let task = await Task.findOne({ _id: taskId})
     if(task) {
         task.finished_date = Date.now()
@@ -287,6 +131,6 @@ router.post('/complete', async function (req, res, next) {
         })
     } else {
         res.json({success: false, message: "No se encontró la tarea"})
-    }
+    }    
 })
 module.exports = router;

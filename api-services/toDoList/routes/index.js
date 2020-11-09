@@ -9,5 +9,4 @@ app.use('/auth', authentication)
 app.use('/tasks', tasks)
 app.use('/users', users)
 
-
 module.exports = app;

@@ -39,10 +39,10 @@ export class RegistryPage implements OnInit {
             const alert = await this.alertController.create({
                 header: "To do list",
                 subHeader: 'Error al intetar registrar',
-                message: cb.error.err.message,
+                message: cb.error.message,
                 buttons: ['OK']
-              });
-              alert.present()
+            });
+            alert.present()
         })
     }
 
@@ -73,6 +73,14 @@ export class RegistryPage implements OnInit {
             .then((cb: any)=> {
                 this.availableUsername = !cb.exists
                 this.checked = true
+            }).catch(async (cb)=> {
+                const alert = await this.alertController.create({
+                    header: "To do list",
+                    subHeader: 'Error al intetar revisar el nombre',
+                    message: cb.error.message,
+                    buttons: ['OK']
+                });
+                alert.present()
             })
     }
     

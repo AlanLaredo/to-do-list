@@ -121,7 +121,7 @@ export class TasksService {
             let data = {
                 name
             }
-            let url = environment.apiUrl + '/tasks/'+taskId
+            let url = environment.apiUrl + '/tasks/name/'+taskId
 
             this
                 .http
