@@ -25,13 +25,11 @@ export class LoginPage implements OnInit {
     ngOnInit() { }
     
     async login() {
-
         const loading = await this.loadingController.create({
             cssClass: 'my-custom-class',
             message: 'Iniciando sesión...',
         });
         await loading.present();
-
         let username = this.username
         let password = this.password
         this.authService.login(username, password)

@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/login', (req, res) => {
-    let username = req.body.username
+    let username = req.body.username.toLowerCase()
     let password = req.body.password
     User.findOne({ username: username }, loginCallback)
     function loginCallback(erro, user) {
