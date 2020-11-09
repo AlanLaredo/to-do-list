@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { UsersService } from 'src/app/services/users/users.service';
 
 @Component({
@@ -21,13 +21,19 @@ export class RegistryPage implements OnInit {
         public toastController: ToastController,
         public usersService: UsersService,
         public router: Router,
-        public alertController: AlertController
+        public alertController: AlertController,
+        public loadingController: LoadingController
     ) { }
 
     ngOnInit() { }
 
-    guardar() {
+    async guardar() {
         if(!this.registryIsValid()) return
+        const loading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Creando nueva tarea...'
+        });
+        await loading.present();
         this.usersService.create(this.username, this.password)
         .then((cb:any) => {
             if(cb.success) {
@@ -43,6 +49,8 @@ export class RegistryPage implements OnInit {
                 buttons: ['OK']
             });
             alert.present()
+        }).finally(()=> {
+            loading.dismiss()
         })
     }
 
@@ -55,7 +63,7 @@ export class RegistryPage implements OnInit {
             this.toast('El nombre de usuario no es valido')
             return false
         }
-        if(this.passwordConfirmation != this.passwordConfirmation) {
+        if(this.password != this.passwordConfirmation) {
             this.toast('Las contraseñas no coinciden')
             return false
         }

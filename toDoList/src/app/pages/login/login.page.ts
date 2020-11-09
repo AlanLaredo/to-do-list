@@ -13,8 +13,8 @@ import { Router } from '@angular/router';
 })
 export class LoginPage implements OnInit {
 
-    username: string = 'alan'
-    password: string = 'Laredo'
+    username: string = ''
+    password: string = ''
     constructor(private authService: AuthService, 
         private tokenStorageService: TokenStorageService,
         public alertController: AlertController,
